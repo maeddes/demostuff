@@ -1,7 +1,11 @@
 name: Deploy AKS
 
-jobs:
+on:
+  workflow_dispatch: {}
+
+jobs: 
   echo-something:
+    runs-on: ubuntu-latest
     steps:
     - name: Echo Something
       run: echo "Hello, Welt!"
