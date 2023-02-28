@@ -1,0 +1,8 @@
+name: Deploy AKS
+
+jobs:
+  echo-something:
+    steps:
+    - name: Echo Something
+      run: echo "Hello, Welt!"
+      
