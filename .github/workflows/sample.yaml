@@ -20,4 +20,5 @@ jobs:
         azcliversion: 2.30.0
         inlineScript: |
           az account show
-          az storage -h
+          az aks list --query '[].{Name:name, State:powerState.code}' -o table
+          az vm list -d --query '[].{Name:name, RG:resourceGroup, IP:publicIps, Id:vmId, Power:powerState}' -o table
