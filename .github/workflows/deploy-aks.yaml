@@ -30,6 +30,7 @@ jobs:
         creds: '${{ secrets.AZURE_CREDENTIALS }}'
 
     - name: Create Resource Group
+      continue-on-error: true
       uses: azure/CLI@v1
       with:
         azcliversion: 2.30.0
