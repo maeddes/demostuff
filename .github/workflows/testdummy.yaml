@@ -8,7 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Install Cilium
-      if: ${{ github.event.inputs.cilium }}
       run: | 
         CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/master/stable.txt)
         CLI_ARCH=amd64
