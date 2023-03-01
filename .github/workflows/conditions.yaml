@@ -3,8 +3,18 @@ name: Variables and Conditions
 on:
   workflow_dispatch: 
     inputs:
-      labName:
-        description: One or Two
+      one:
+        description: One
+        required: true
+        type: boolean
+        default: true
+      two:
+        description: Two
+        required: true
+        type: boolean
+        default: true
+      three:
+        description: Three
         required: true
         type: boolean
         default: true
@@ -15,16 +25,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Echo One
-      if: ${{ github.event.inputs.labName == false}}
+      if: ${{ github.event.inputs.one}}
       run: | 
-        echo "Hello, One!"
+        echo "Hello, One! ${{ github.event.inputs.one}}"
+
+    - name: Echo One More
+      if: ${{ !github.event.inputs.one }}
+      run: | 
+        echo "Hello, One! ${{ github.event.inputs.one}}"
+
+    - name: Echo Another One
+      if: ${{ github.event.inputs.one == true}}
+      run: | 
+        echo "Hello, One! ${{ github.event.inputs.one}}"
 
     - name: Echo Two
-      if: ${{ github.event.inputs.labName == true}}
+      if: ${{ github.event.inputs.two == true}}
       run: | 
         echo "Hello, Two!"
 
     - name: Echo Three
       #if: ${{ github.event.inputs.labName == true}}
       run: | 
-        echo "Hello, Two!"
+        echo "Hello, Three!"
