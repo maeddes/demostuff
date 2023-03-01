@@ -1,4 +1,4 @@
-name: Variables and Conditions
+name: Crash Test Dummy
 
 on:
   workflow_dispatch: {}
