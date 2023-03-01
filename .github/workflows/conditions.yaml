@@ -1,0 +1,24 @@
+name: Azure CLI
+
+on:
+  workflow_dispatch: 
+    inputs:
+      labName:
+        description: skipOne
+        required: true
+        type: boolean
+        default: true
+
+jobs:
+
+  do-stuff:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Echo One
+      if: ${{ !skipOne }}
+      run: | 
+        echo "Hello, One!"
+
+    - name: Echo Two
+      run: | 
+        echo "Hello, Two!"
