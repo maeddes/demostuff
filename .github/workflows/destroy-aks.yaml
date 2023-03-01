@@ -28,8 +28,8 @@ jobs:
       with:
         azcliversion: 2.30.0
         inlineScript: |
-          echo az aks delete --resource-group mhs-${{ github.event.inputs.labName }} --name mhs-${{ github.event.inputs.labName }} 
-          az aks delete --resource-group mhs-${{ github.event.inputs.labName }} --name mhs-${{ github.event.inputs.labName }} 
+          echo az aks delete --resource-group mhs-${{ github.event.inputs.labName }} --name mhs-${{ github.event.inputs.labName }} --yes
+          az aks delete --resource-group mhs-${{ github.event.inputs.labName }} --name mhs-${{ github.event.inputs.labName }} --yes
 
     - name: Remove Resource Group
       continue-on-error: true
@@ -37,7 +37,7 @@ jobs:
       with:
         azcliversion: 2.30.0
         inlineScript: |
-          echo group delete --name mhs-${{ github.event.inputs.labName }} 
-          az group delete --name mhs-${{ github.event.inputs.labName }} 
+          echo group delete --name mhs-${{ github.event.inputs.labName }} --yes
+          az group delete --name mhs-${{ github.event.inputs.labName }} --yes
            
     
