@@ -10,7 +10,7 @@ on:
         default: 'abc'
 
 jobs: 
-  deploy-cluster:
+  destroy-cluster:
     runs-on: ubuntu-latest
     steps:
     - name: Echo Something
