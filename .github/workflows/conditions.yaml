@@ -15,11 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Echo One
-      if: ${{ github.event.inputs.skipOne == false}}
+      if: ${{ github.event.inputs.labName == false}}
       run: | 
         echo "Hello, One!"
 
     - name: Echo Two
-      if: ${{ github.event.inputs.skipOne == true}}
+      if: ${{ github.event.inputs.labName == true}}
       run: | 
         echo "Hello, Two!"
