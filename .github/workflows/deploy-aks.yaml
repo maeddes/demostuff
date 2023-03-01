@@ -1,14 +1,26 @@
 name: Deploy AKS
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch: 
+    inputs:
+      labName:
+        description: Labname
+        required: true
+        type: string
+
+      nodeCount:
+        description: Nodecount
+        required: true
+        type: string
 
 jobs: 
   echo-something:
     runs-on: ubuntu-latest
     steps:
     - name: Echo Something
-      run: echo "Hello, Welt!"
+      run: | 
+        echo "Hello, Welt!"
+        echo ${{ github.event.inputs.nodeCount }}
       
     - name: Azure Login
       uses: azure/login@v1
@@ -20,7 +32,7 @@ jobs:
       with:
         azcliversion: 2.30.0
         inlineScript: |
-          az account show
-          az aks list
+          az group list
+          echo az group create mhs-${{ github.event.inputs.nodeCount }}
         
   
