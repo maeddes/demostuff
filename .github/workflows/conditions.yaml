@@ -23,3 +23,8 @@ jobs:
       if: ${{ github.event.inputs.labName == true}}
       run: | 
         echo "Hello, Two!"
+
+    - name: Echo Three
+      #if: ${{ github.event.inputs.labName == true}}
+      run: | 
+        echo "Hello, Two!"
