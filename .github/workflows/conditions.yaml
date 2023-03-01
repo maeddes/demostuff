@@ -1,4 +1,4 @@
-name: Azure CLI
+name: Variables and Conditions
 
 on:
   workflow_dispatch: 
