@@ -4,7 +4,7 @@ on:
   workflow_dispatch: 
     inputs:
       labName:
-        description: skipOne
+        description: One or Two
         required: true
         type: boolean
         default: true
@@ -15,10 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Echo One
-      if: ${{ !github.event.inputs.skipOne }}
+      if: ${{ github.event.inputs.skipOne == false}}
       run: | 
         echo "Hello, One!"
 
     - name: Echo Two
+      if: ${{ github.event.inputs.skipOne == true}}
       run: | 
         echo "Hello, Two!"
