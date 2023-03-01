@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Echo One
-      if: ${{ !skipOne }}
+      if: ${{ !github.event.inputs.skipOne }}
       run: | 
         echo "Hello, One!"
 
