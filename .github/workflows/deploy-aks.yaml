@@ -34,7 +34,7 @@ jobs:
       with:
         azcliversion: 2.30.0
         inlineScript: |
-          az group create mhs-${{ github.event.inputs.labName }}
+          az group create mhs-${{ github.event.inputs.labName }} --location westeurope
            
     - name: Create AKS Cluster
       uses: azure/CLI@v1
