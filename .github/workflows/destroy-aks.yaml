@@ -1,0 +1,43 @@
+name: Destroy AKS
+
+on:
+  workflow_dispatch: 
+    inputs:
+      labName:
+        description: Labname
+        required: true
+        type: string
+        default: 'abc'
+
+jobs: 
+  deploy-cluster:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Echo Something
+      run: | 
+        echo "Hello, Welt!"
+        echo ${{ github.event.inputs.nodeCount }}
+      
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+
+    - name: Destroy AKS Cluster
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: |
+          echo az aks delete --resource-group mhs-${{ github.event.inputs.labName }} --name mhs-${{ github.event.inputs.labName }} 
+          az aks delete --resource-group mhs-${{ github.event.inputs.labName }} --name mhs-${{ github.event.inputs.labName }} 
+
+    - name: Remove Resource Group
+      continue-on-error: true
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: |
+          echo group delete --name mhs-${{ github.event.inputs.labName }} 
+          az group delete --name mhs-${{ github.event.inputs.labName }} 
+           
+    
