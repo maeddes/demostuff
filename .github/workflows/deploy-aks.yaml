@@ -38,7 +38,7 @@ jobs:
       continue-on-error: true
       uses: azure/CLI@v1
       with:
-        azcliversion: 2.30.0
+        azcliversion: 2.39.0
         inlineScript: |
           echo group create --name mhsrg-${{ github.event.inputs.labName }} --location westeurope
           az group create --name mhsrg-${{ github.event.inputs.labName }} --location westeurope
@@ -47,7 +47,7 @@ jobs:
       if: ${{ !github.event.inputs.cilium }}
       uses: azure/CLI@v1
       with:
-        azcliversion: 2.30.0
+        azcliversion: 2.39.0
         inlineScript: |
           echo az aks create --resource-group mhsrg-${{ github.event.inputs.labName }} --name mhs-${{ github.event.inputs.labName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --generate-ssh-keys
           az aks create --resource-group mhsrg-${{ github.event.inputs.labName }} --name mhs-${{ github.event.inputs.labName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --generate-ssh-keys
@@ -56,7 +56,7 @@ jobs:
       if: ${{ github.event.inputs.cilium }}
       uses: azure/CLI@v1
       with:
-        azcliversion: 2.30.0
+        azcliversion: 2.39.0
         inlineScript: |
           echo az aks create --resource-group mhsrg-${{ github.event.inputs.labName }} --name mhs-${{ github.event.inputs.labName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --network-plugin none --generate-ssh-keys
           az aks create --resource-group mhsrg-${{ github.event.inputs.labName }} --name mhs-${{ github.event.inputs.labName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --network-plugin none --generate-ssh-keys
@@ -65,7 +65,7 @@ jobs:
       if: ${{ github.event.inputs.cilium }}
       uses: azure/CLI@v1
       with:
-        azcliversion: 2.30.0
+        azcliversion: 2.39.0
         inlineScript: |
           echo az aks get-credentials --resource-group mhsrg-${{ github.event.inputs.labName }} --name mhs-${{ github.event.inputs.labName }} 
           az aks get-credentials --resource-group mhsrg-${{ github.event.inputs.labName }} --name mhs-${{ github.event.inputs.labName }} 
