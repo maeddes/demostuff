@@ -42,5 +42,6 @@ jobs:
       with:
         azcliversion: 2.30.0
         inlineScript: |
+          echo az aks create --resource-group mhsdemo --name mhs-${{ github.event.inputs.labName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --generate-ssh-keys
           az aks create --resource-group mhsdemo --name mhs-${{ github.event.inputs.labName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --generate-ssh-keys
     
