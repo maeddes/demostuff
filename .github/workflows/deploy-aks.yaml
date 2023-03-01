@@ -7,11 +7,13 @@ on:
         description: Labname
         required: true
         type: string
+        default: 'abc'
 
       nodeCount:
         description: Nodecount
         required: true
         type: string
+        default: '1'
 
 jobs: 
   echo-something:
@@ -34,5 +36,6 @@ jobs:
         inlineScript: |
           az group list
           echo az group create mhs-${{ github.event.inputs.nodeCount }}
-        
-  
+          echo az aks create --resource-group mhsdemo --name mhs-${{ github.event.inputs.labName }} --node-count 3 --node-vm-size Standard_E8_v3 --generate-ssh-keys
+          
+    
