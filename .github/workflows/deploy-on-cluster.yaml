@@ -1,4 +1,4 @@
-name: Deploy AKS
+name: Deploy on AKS
 
 on:
   workflow_dispatch: 
@@ -9,14 +9,38 @@ on:
         type: string
         default: 'abc'
 
-      nodeCount:
-        description: Nodecount
+      argocd:
+        description: ArgoCD
         required: true
-        type: string
-        default: '1'
+        type: boolean
+        default: false
 
       cilium:
-        description: Enable Cilium
+        description: Cilium Grafana
+        required: true
+        type: boolean
+        default: false
+
+      istio:
+        description: Istio
+        required: true
+        type: boolean
+        default: false
+
+      otel:
+        description: OpenTelemetry
+        required: true
+        type: boolean
+        default: false
+
+      dqualizer:
+        description: dqualizer
+        required: true
+        type: boolean
+        default: false
+
+      ocelot:
+        description: ocelot
         required: true
         type: boolean
         default: false
@@ -40,37 +64,22 @@ jobs:
         inlineScript: |
           az version
 
-    - name: Create Resource Group
-      continue-on-error: true
-      uses: azure/CLI@v1
+    - name: Get Context
+      uses: azure/aks-set-context@v3
       with:
-        inlineScript: |
-          echo group create --name mhsrg-${{ github.event.inputs.k8sName }} --location westeurope
-          az group create --name mhsrg-${{ github.event.inputs.k8sName }} --location westeurope
-           
-    - name: Create plain AKS Cluster
-      if: ${{ !github.event.inputs.cilium }}
-      uses: azure/CLI@v1
-      with:
-        inlineScript: |
-          echo az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --generate-ssh-keys
-          az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --generate-ssh-keys
+        resource-group: mhsrg-${{ github.event.inputs.k8sName }}
+        cluster-name: mhs-${{ github.event.inputs.k8sName }}
     
     - name: Create Cilium-enabled AKS Cluster
       continue-on-error: true
-      if: ${{ github.event.inputs.cilium }} 
+      if: ${{ github.event.inputs.cilium }}
       uses: azure/CLI@v1
       with:
         inlineScript: |
           echo az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --network-plugin none --generate-ssh-keys
           az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --network-plugin none --generate-ssh-keys
 
-    - name: Get Context
-      uses: azure/aks-set-context@v3
-      if: ${{ github.event.inputs.cilium }}
-      with:
-        resource-group: mhsrg-${{ github.event.inputs.k8sName }}
-        cluster-name: mhs-${{ github.event.inputs.k8sName }}
+
 
     - name: Install Cilium & Hubble
       if: ${{ github.event.inputs.cilium }}
