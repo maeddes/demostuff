@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Test AZ CLI
+      if: false
       uses: azure/CLI@v1
       with:
         inlineScript: |
