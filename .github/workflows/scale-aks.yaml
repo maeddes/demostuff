@@ -1,0 +1,43 @@
+name: Destroy AKS
+
+on:
+  workflow_dispatch: 
+    inputs:
+      k8sName:
+        description: k8sname
+        required: true
+        type: string
+        default: 'abc'
+
+      nodeCount:
+        description: New Nodecount
+        required: true
+        type: string
+        default: '1'
+
+jobs: 
+  destroy-cluster:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Echo Something
+      run: | 
+        echo "Hello, Welt!"
+        echo ${{ github.event.inputs.nodeCount }}
+      
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+
+    - name: Destroy AKS Cluster
+      run: | # does not need Azure CLI / installed on ubuntu latest anyway
+        az version
+        az aks nodepool list -g mhsrg-abc --cluster-name mhs-abc -o table
+        NODEPOOL=$(az aks nodepool list -g mhsrg-abc --cluster-name mhs-abc -o tsv | awk '{print $20}')
+        echo $NODEPOOL
+        echo az aks nodepool scale --name $NODEPOOL --resource-group mhsrg-${{ github.event.inputs.k8sName }} --cluster-name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} 
+        az aks nodepool scale --name $NODEPOOL --resource-group mhsrg-${{ github.event.inputs.k8sName }} --cluster-name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} 
+        az aks nodepool list -g mhsrg-abc --cluster-name mhs-abc -o table
+        
+
+           
