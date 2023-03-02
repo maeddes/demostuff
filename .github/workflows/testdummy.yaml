@@ -18,4 +18,5 @@ jobs:
       continue-on-error: true
       run: | 
         az version
+        gcloud version
 
