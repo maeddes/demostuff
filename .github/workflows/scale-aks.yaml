@@ -1,4 +1,4 @@
-name: Destroy AKS
+name: Scale AKS
 
 on:
   workflow_dispatch: 
