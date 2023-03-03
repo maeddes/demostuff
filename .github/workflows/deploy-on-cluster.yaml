@@ -27,6 +27,12 @@ on:
         type: boolean
         default: false
 
+      testkube:
+        description: Istio
+        required: true
+        type: boolean
+        default: false
+
       otel:
         description: OpenTelemetry
         required: true
