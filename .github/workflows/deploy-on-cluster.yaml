@@ -69,40 +69,50 @@ jobs:
       with:
         resource-group: mhsrg-${{ github.event.inputs.k8sName }}
         cluster-name: mhs-${{ github.event.inputs.k8sName }}
-    
-    - name: Create Cilium-enabled AKS Cluster
+
+    - name: Install ArgoCD
+      if: ${{ argocd }}
       continue-on-error: true
-      if: ${{ github.event.inputs.cilium }}
-      uses: azure/CLI@v1
-      with:
-        inlineScript: |
-          echo az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --network-plugin none --generate-ssh-keys
-          az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --network-plugin none --generate-ssh-keys
+      run: |
+        kubectl create namespace argocd
+        kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+        kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+        kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+
+    - name: Install Istio
+      if: ${{ istio }}
+      continue-on-error: true
+      run: |
+        curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.17.1 sh -
+        istio-1.17.1/bin/istioctl install --set profile=default -y 
+        kubectl apply -f samples/addons
+        kubectl patch svc kiali -n istio-system -p '{"spec": {"type": "LoadBalancer"}}'
+        
+
+    - name: Install OpenTelemetry Demo
+      if: ${{ otel }}
+      continue-on-error: true
+      run: |
+        kubectl create namespace otel
+        helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+        helm install my-otel-demo-tmp open-telemetry/opentelemetry-demo -n otel
+        kubectl patch svc my-otel-demo-tmp-frontendproxy -n otel -p '{"spec": {"type": "LoadBalancer"}}'
+
+    - name: Install TestKube
+      if: ${{ testkube }}
+      continue-on-error: true
+      run: |
+        curl -sSLf https://get.testkube.io | sh
+        /usr/local/bin/testkube init
+    
+ 
+    - name: Bill of materials
+      continue-on-error: true
+      run: |
+        INGRESS_IP_ISTIO=$(kubectl get service --namespace istio-system istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[].ip}'); echo Istio Ingress: $INGRESS_IP_ISTIO
 
 
 
-    - name: Install Cilium & Hubble
-      if: ${{ github.event.inputs.cilium }}
-      run: |           
-        CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/master/stable.txt)
-        CLI_ARCH=amd64
-        if [ "$(uname -m)" = "aarch64" ]; then CLI_ARCH=arm64; fi
-        curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
-        sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
-        rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
-        echo cilium install --azure-resource-group "mhsrg-${{ github.event.inputs.k8sName }}"
-        cilium install --azure-resource-group "mhsrg-${{ github.event.inputs.k8sName }}"
-        cilium status --wait
-
-        export HUBBLE_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/hubble/master/stable.txt)
-        HUBBLE_ARCH=amd64
-        if [ "$(uname -m)" = "aarch64" ]; then HUBBLE_ARCH=arm64; fi
-        curl -L --fail --remote-name-all https://github.com/cilium/hubble/releases/download/$HUBBLE_VERSION/hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
-        sha256sum --check hubble-linux-${HUBBLE_ARCH}.tar.gz.sha256sum
-        sudo tar xzvfC hubble-linux-${HUBBLE_ARCH}.tar.gz /usr/local/bin
-        rm hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
-        cilium hubble enable --ui
-        cilium status --wait
 
 
 
