@@ -1,0 +1,46 @@
+cat <<EOF | kubectl apply -f -
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: testkube-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http-k8stestkube
+      protocol: HTTP
+    hosts:
+    - "testkube.${INGRESS_DOMAIN}"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: testkube-vs
+  namespace: istio-system
+spec:
+  hosts:
+  - "testkube.${INGRESS_DOMAIN}"
+  gateways:
+  - testkube-gateway
+  http:
+  - route:
+    - destination:
+        host: testkube-dashboard.testkube
+        port:
+          number: 8080
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: testkube
+  namespace: istio-system
+spec:
+  host: testkube-dashboard.testkube
+  trafficPolicy:
+    tls:
+      mode: DISABLE
+---
+EOF

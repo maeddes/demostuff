@@ -85,6 +85,12 @@ jobs:
         kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
         kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
 
+    - name: Install Cilium Grafana
+      if: ${{ github.event.inputs.cilium }}
+      continue-on-error: true
+      run: |
+        kubectl apply -f https://raw.githubusercontent.com/cilium/cilium/v1.13/examples/kubernetes/addons/prometheus/monitoring-example.yaml   
+
     - name: Install Istio
       if: ${{ github.event.inputs.istio }}
       continue-on-error: true
@@ -92,13 +98,14 @@ jobs:
         curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.17.1 sh -
         istio-1.17.1/bin/istioctl install --set profile=default -y 
         kubectl apply -f istio-1.17.1/samples/addons
-        kubectl patch svc kiali -n istio-system -p '{"spec": {"type": "LoadBalancer"}}'
+        kubectl patch svc kiali -n istio-system -p '{"spec": {"type": "LoadBalancer"}}' 
 
-    - name: Install Cilium Grafana
-      if: ${{ github.event.inputs.cilium }}
+   - name: Install TestKube
+      if: ${{ github.event.inputs.testkube }}
       continue-on-error: true
       run: |
-        kubectl apply -f https://raw.githubusercontent.com/cilium/cilium/v1.13/examples/kubernetes/addons/prometheus/monitoring-example.yaml    
+        wget -qO - https://repo.testkube.io/key.pub | sudo apt-key add - && echo "deb https://repo.testkube.io/linux linux main" | sudo tee -a /etc/apt/sources.list && sudo apt-get update && sudo apt-get install -y testkube
+        testkube init
 
     - name: Install OpenTelemetry Demo
       if: ${{ github.event.inputs.otel }}
@@ -109,18 +116,11 @@ jobs:
         helm install my-otel-demo-tmp open-telemetry/opentelemetry-demo -n otel
         kubectl patch svc my-otel-demo-tmp-frontendproxy -n otel -p '{"spec": {"type": "LoadBalancer"}}'
 
-    - name: Install TestKube
-      if: ${{ github.event.inputs.testkube }}
-      continue-on-error: true
-      run: |
-        wget -qO - https://repo.testkube.io/key.pub | sudo apt-key add - && echo "deb https://repo.testkube.io/linux linux main" | sudo tee -a /etc/apt/sources.list && sudo apt-get update && sudo apt-get install -y testkube
-        testkube init
- 
-    - name: Bill of materials
+     - name: Bill of materials
       continue-on-error: true
       run: |
         INGRESS_IP_ISTIO=$(kubectl get service --namespace istio-system istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[].ip}'); echo Istio Ingress: $INGRESS_IP_ISTIO
-        KIALI_IP_ISTIO=$(kubectl get service --namespace istio-system kiali -o jsonpath='{.status.loadBalancer.ingress[].ip}'); echo Istio Ingress: $KIALI_IP_ISTIO
+        KIALI_IP_ISTIO=$(kubectl get service --namespace istio-system kiali -o jsonpath='{.status.loadBalancer.ingress[].ip}'); echo Kiali IP: $KIALI_IP_ISTIO
         kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
 
 

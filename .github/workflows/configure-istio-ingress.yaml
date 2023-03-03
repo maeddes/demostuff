@@ -1,0 +1,383 @@
+name: Deploy on AKS
+
+on:
+  workflow_dispatch: 
+    inputs:
+      k8sName:
+        description: k8sname
+        required: true
+        type: string
+        default: 'abc'
+
+      argocd:
+        description: ArgoCD
+        required: true
+        type: boolean
+        default: false
+
+      cilium:
+        description: Cilium Grafana
+        required: true
+        type: boolean
+        default: false
+
+      istio:
+        description: Istio
+        required: true
+        type: boolean
+        default: true
+
+      testkube:
+        description: Testkube
+        required: true
+        type: boolean
+        default: true
+
+      otel:
+        description: OpenTelemetry
+        required: true
+        type: boolean
+        default: true
+
+      dqualizer:
+        description: dqualizer
+        required: true
+        type: boolean
+        default: false
+
+      ocelot:
+        description: ocelot
+        required: true
+        type: boolean
+        default: false
+
+jobs: 
+  deploy-cluster:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Echo Something
+      run: | 
+        echo "Hello, Welt!"
+      
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+
+    - name: Display az cli version
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az version
+
+    - name: Get Context
+      uses: azure/aks-set-context@v3
+      with:
+        resource-group: mhsrg-${{ github.event.inputs.k8sName }}
+        cluster-name: mhs-${{ github.event.inputs.k8sName }}
+
+    - name: Configure ArgoCD
+      if: ${{ github.event.inputs.argocd }}
+      continue-on-error: true
+      run: |
+        echo not yet solved
+
+    - name: Configure Istio Stuff
+      if: ${{ github.event.inputs.istio }}
+      continue-on-error: true
+      run: |
+
+        export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+        export INGRESS_DOMAIN=${INGRESS_HOST}.nip.io
+
+        cat <<EOF | kubectl apply -f -
+        apiVersion: networking.istio.io/v1alpha3
+        kind: Gateway
+        metadata:
+          name: grafana-gateway
+          namespace: istio-system
+        spec:
+          selector:
+            istio: ingressgateway
+          servers:
+          - port:
+              number: 80
+              name: http-grafana
+              protocol: HTTP
+            hosts:
+            - "grafana.${INGRESS_DOMAIN}"
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: VirtualService
+        metadata:
+          name: grafana-vs
+          namespace: istio-system
+        spec:
+          hosts:
+          - "grafana.${INGRESS_DOMAIN}"
+          gateways:
+          - grafana-gateway
+          http:
+          - route:
+            - destination:
+                host: grafana
+                port:
+                  number: 3000
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: DestinationRule
+        metadata:
+          name: grafana
+          namespace: istio-system
+        spec:
+          host: grafana
+          trafficPolicy:
+            tls:
+              mode: DISABLE
+        ---
+        EOF
+
+        cat <<EOF | kubectl apply -f -
+        apiVersion: networking.istio.io/v1alpha3
+        kind: Gateway
+        metadata:
+          name: kiali-gateway
+          namespace: istio-system
+        spec:
+          selector:
+            istio: ingressgateway
+          servers:
+          - port:
+              number: 80
+              name: http-kiali
+              protocol: HTTP
+            hosts:
+            - "kiali.${INGRESS_DOMAIN}"
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: VirtualService
+        metadata:
+          name: kiali-vs
+          namespace: istio-system
+        spec:
+          hosts:
+          - "kiali.${INGRESS_DOMAIN}"
+          gateways:
+          - kiali-gateway
+          http:
+          - route:
+            - destination:
+                host: kiali
+                port:
+                  number: 20001
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: DestinationRule
+        metadata:
+          name: kiali
+          namespace: istio-system
+        spec:
+          host: kiali
+          trafficPolicy:
+            tls:
+              mode: DISABLE
+        ---
+        EOF
+
+        cat <<EOF | kubectl apply -f -
+        apiVersion: networking.istio.io/v1alpha3
+        kind: Gateway
+        metadata:
+          name: prometheus-gateway
+          namespace: istio-system
+        spec:
+          selector:
+            istio: ingressgateway
+          servers:
+          - port:
+              number: 80
+              name: http-prom
+              protocol: HTTP
+            hosts:
+            - "prometheus.${INGRESS_DOMAIN}"
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: VirtualService
+        metadata:
+          name: prometheus-vs
+          namespace: istio-system
+        spec:
+          hosts:
+          - "prometheus.${INGRESS_DOMAIN}"
+          gateways:
+          - prometheus-gateway
+          http:
+          - route:
+            - destination:
+                host: prometheus
+                port:
+                  number: 9090
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: DestinationRule
+        metadata:
+          name: prometheus
+          namespace: istio-system
+        spec:
+          host: prometheus
+          trafficPolicy:
+            tls:
+              mode: DISABLE
+        ---
+        EOF
+
+        cat <<EOF | kubectl apply -f -
+        apiVersion: networking.istio.io/v1alpha3
+        kind: Gateway
+        metadata:
+          name: tracing-gateway
+          namespace: istio-system
+        spec:
+          selector:
+            istio: ingressgateway
+          servers:
+          - port:
+              number: 80
+              name: http-tracing
+              protocol: HTTP
+            hosts:
+            - "tracing.${INGRESS_DOMAIN}"
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: VirtualService
+        metadata:
+          name: tracing-vs
+          namespace: istio-system
+        spec:
+          hosts:
+          - "tracing.${INGRESS_DOMAIN}"
+          gateways:
+          - tracing-gateway
+          http:
+          - route:
+            - destination:
+                host: tracing
+                port:
+                  number: 80
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: DestinationRule
+        metadata:
+          name: tracing
+          namespace: istio-system
+        spec:
+          host: tracing
+          trafficPolicy:
+            tls:
+              mode: DISABLE
+        ---
+        EOF
+
+    - name: Configure Otel Stuff
+      if: ${{ github.event.inputs.otel }}
+      continue-on-error: true
+      run: |
+
+        cat <<EOF | kubectl apply -f -
+        apiVersion: networking.istio.io/v1alpha3
+        kind: Gateway
+        metadata:
+          name: otel-gateway
+          namespace: istio-system
+        spec:
+          selector:
+            istio: ingressgateway
+          servers:
+          - port:
+              number: 80
+              name: http-k8sotel
+              protocol: HTTP
+            hosts:
+            - "otel.${INGRESS_DOMAIN}"
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: VirtualService
+        metadata:
+          name: otel-vs
+          namespace: istio-system
+        spec:
+          hosts:
+          - "otel.${INGRESS_DOMAIN}"
+          gateways:
+          - otel-gateway
+          http:
+          - route:
+            - destination:
+                host: my-otel-demo-tmp-frontendproxy.otel.svc.cluster.local
+                port:
+                  number: 8080
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: DestinationRule
+        metadata:
+          name: otel
+          namespace: istio-system
+        spec:
+          host: my-otel-demo-tmp-frontendproxy.otel
+          trafficPolicy:
+            tls:
+              mode: DISABLE
+        ---
+        EOF
+
+    - name: Configure Kubetest Stuff
+      if: ${{ github.event.inputs.otel }}
+      continue-on-error: true
+      run: |
+
+        cat <<EOF | kubectl apply -f -
+        apiVersion: networking.istio.io/v1alpha3
+        kind: Gateway
+        metadata:
+          name: testkube-gateway
+          namespace: istio-system
+        spec:
+          selector:
+            istio: ingressgateway
+          servers:
+          - port:
+              number: 80
+              name: http-k8stestkube
+              protocol: HTTP
+            hosts:
+            - "testkube.${INGRESS_DOMAIN}"
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: VirtualService
+        metadata:
+          name: testkube-vs
+          namespace: istio-system
+        spec:
+          hosts:
+          - "testkube.${INGRESS_DOMAIN}"
+          gateways:
+          - testkube-gateway
+          http:
+          - route:
+            - destination:
+                host: testkube-dashboard.testkube.svc.cluster.local
+                port:
+                  number: 8080
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: DestinationRule
+        metadata:
+          name: testkube
+          namespace: istio-system
+        spec:
+          host: testkube-dashboard.testkube
+          trafficPolicy:
+            tls:
+              mode: DISABLE
+        ---
+        EOF
