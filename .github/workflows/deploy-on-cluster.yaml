@@ -28,7 +28,7 @@ on:
         default: false
 
       testkube:
-        description: Istio
+        description: Testkube
         required: true
         type: boolean
         default: false
