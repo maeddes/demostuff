@@ -98,7 +98,6 @@ jobs:
         curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.17.1 sh -
         istio-1.17.1/bin/istioctl install --set profile=default -y 
         kubectl apply -f istio-1.17.1/samples/addons
-        kubectl patch svc kiali -n istio-system -p '{"spec": {"type": "LoadBalancer"}}' 
 
    - name: Install TestKube
       if: ${{ github.event.inputs.testkube }}
@@ -113,9 +112,7 @@ jobs:
       run: |
         kubectl create namespace otel
         helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
-        helm install my-otel-demo-tmp open-telemetry/opentelemetry-demo -n otel
-        kubectl patch svc my-otel-demo-tmp-frontendproxy -n otel -p '{"spec": {"type": "LoadBalancer"}}'
-
+        helm install my-otel-demo-tmp open-telemetry/opentelemetry-demo -n otel        
      - name: Bill of materials
       continue-on-error: true
       run: |
