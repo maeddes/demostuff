@@ -24,6 +24,7 @@ on:
 jobs: 
   deploy-cluster:
     runs-on: ubuntu-latest
+    
     steps:
     - name: Echo Something
       run: | 
@@ -49,7 +50,7 @@ jobs:
           az group create --name mhsrg-${{ github.event.inputs.k8sName }} --location westeurope
            
     - name: Create plain AKS Cluster
-      if: ${{ !github.event.inputs.cilium == 'false'}}
+      if: ${{ github.event.inputs.cilium == 'false'}}
       with:
         inlineScript: |
           echo az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 
