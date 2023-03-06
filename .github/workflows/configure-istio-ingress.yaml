@@ -387,3 +387,21 @@ jobs:
               mode: DISABLE
         ---
         EOF
+
+
+    - name: Bill of materials
+      continue-on-error: true
+      run: |
+
+        export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+        export INGRESS_DOMAIN=${INGRESS_HOST}.nip.io
+        echo Ingress Host: $INGRESS_DOMAIN Ingress Domain: $INGRESS_DOMAIN
+        
+        echo kiali.${INGRESS_DOMAIN}
+        echo grafana.${INGRESS_DOMAIN}
+        echo testkube.${INGRESS_DOMAIN}
+        echo tracing.${INGRESS_DOMAIN}
+        echo otel.${INGRESS_DOMAIN}
+
+
+        
