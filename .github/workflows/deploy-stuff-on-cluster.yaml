@@ -1,0 +1,77 @@
+name: Deploy stuff on AKS
+
+on:
+  workflow_dispatch: 
+    inputs:
+      k8sName:
+        description: k8sname
+        required: true
+        type: string
+        default: 'abc'
+
+      argocd:
+        description: ArgoCD
+        required: true
+        type: boolean
+        default: false
+
+      cilium:
+        description: Cilium Grafana
+        required: true
+        type: boolean
+        default: false
+
+      istio:
+        description: Istio
+        required: true
+        type: boolean
+        default: false
+
+      testkube:
+        description: Testkube
+        required: true
+        type: boolean
+        default: false
+
+      otel:
+        description: OpenTelemetry
+        required: true
+        type: boolean
+        default: false
+
+      dqualizer:
+        description: dqualizer
+        required: true
+        type: boolean
+        default: false
+
+      ocelot:
+        description: ocelot
+        required: true
+        type: boolean
+        default: false
+
+jobs: 
+  deploy-cluster:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Echo Something
+      run: | 
+        echo "Hello, Welt!"
+      
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+
+    - name: Display az cli version
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az version
+
+    - name: Get Context
+      uses: azure/aks-set-context@v3
+      with:
+        resource-group: mhsrg-${{ github.event.inputs.k8sName }}
+        cluster-name: mhs-${{ github.event.inputs.k8sName }}
