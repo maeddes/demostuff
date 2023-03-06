@@ -20,7 +20,7 @@ jobs:
         az version
         gcloud version
 
-   - name: Install TestKube
+    - name: Install TestKube
       if: ${{ github.event.inputs.testkube }}
       continue-on-error: true
       run: |

@@ -93,6 +93,13 @@ jobs:
         istio-1.17.1/bin/istioctl install --set profile=default -y 
         kubectl apply -f istio-1.17.1/samples/addons
 
+    - name: Install TestKube
+      if: ${{ github.event.inputs.testkube }}
+      continue-on-error: true
+      run: |
+        wget -qO - https://repo.testkube.io/key.pub | sudo apt-key add - && echo "deb https://repo.testkube.io/linux linux main" | sudo tee -a /etc/apt/sources.list && sudo apt-get update && sudo apt-get install -y testkube
+        testkube init
+
     - name: Install OpenTelemetry Demo
       if: ${{ github.event.inputs.otel }}
       continue-on-error: true
