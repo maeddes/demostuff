@@ -30,8 +30,14 @@ jobs:
       run: | 
         echo "Hello, Welt!"
 
+      
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
 
-
-
-
-    
+    - name: Display az cli version
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az version
