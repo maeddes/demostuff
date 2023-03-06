@@ -53,8 +53,8 @@ jobs:
       uses: azure/CLI@v1
       with:
         inlineScript: |
-          echo az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --generate-ssh-keys
-          az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --generate-ssh-keys
+          echo az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 
+          az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 
     
     - name: Create Cilium-enabled AKS Cluster
       continue-on-error: true
@@ -62,8 +62,8 @@ jobs:
       uses: azure/CLI@v1
       with:
         inlineScript: |
-          echo az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --network-plugin none --generate-ssh-keys
-          az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --network-plugin none --generate-ssh-keys
+          echo az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --network-plugin none 
+          az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --network-plugin none 
 
     - name: Get Context
       uses: azure/aks-set-context@v3
