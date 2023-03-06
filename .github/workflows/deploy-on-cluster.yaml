@@ -106,7 +106,8 @@ jobs:
         kubectl create namespace otel
         helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
         helm install my-otel-demo-tmp open-telemetry/opentelemetry-demo -n otel        
-     - name: Bill of materials
+    
+    - name: Bill of materials
       continue-on-error: true
       run: |
         INGRESS_IP_ISTIO=$(kubectl get service --namespace istio-system istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[].ip}'); echo Istio Ingress: $INGRESS_IP_ISTIO
