@@ -52,7 +52,7 @@ on:
         default: false
 
 jobs: 
-  deploy-cluster:
+  deploy-stuff-on-cluster:
     runs-on: ubuntu-latest
     steps:
     - name: Echo Something
@@ -78,7 +78,7 @@ jobs:
 
     - name: Install ArgoCD
       if: ${{ github.event.inputs.argocd }}
-      continue-on-error: true
+      #continue-on-error: true
       run: |
         echo ${{ github.event.inputs.argocd }}
         kubectl create namespace argocd
