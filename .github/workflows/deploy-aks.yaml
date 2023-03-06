@@ -51,7 +51,7 @@ jobs:
           az group create --name mhsrg-${{ github.event.inputs.k8sName }} --location westeurope
            
     - name: Create plain AKS Cluster
-      if: ${{ github.event.inputs.cilium != 'false'}}
+      if: ${{ github.event.inputs.cilium == 'false'}}
       uses: azure/CLI@v1
       with:
         inlineScript: |
