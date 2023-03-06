@@ -395,6 +395,7 @@ jobs:
 
         export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
         export INGRESS_DOMAIN=${INGRESS_HOST}.nip.io
+        
         echo Ingress Host: $INGRESS_DOMAIN Ingress Domain: $INGRESS_DOMAIN
         
         echo kiali.${INGRESS_DOMAIN}
@@ -403,5 +404,5 @@ jobs:
         echo tracing.${INGRESS_DOMAIN}
         echo otel.${INGRESS_DOMAIN}
 
-
+        kubectl get svc argocd-server -n argocd
         
