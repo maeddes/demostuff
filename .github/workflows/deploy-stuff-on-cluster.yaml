@@ -57,7 +57,7 @@ jobs:
     steps:
     - name: Echo Something
       run: | 
-        echo "Hello, Welt!"
+        echo "Hello, Welt !"
       
     - name: Azure Login
       uses: azure/login@v1
