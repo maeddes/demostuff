@@ -24,13 +24,28 @@ jobs:
   do-stuff:
     runs-on: ubuntu-latest
     steps:
+    - name: Echo Always 
+      if: always()
+      run: | 
+        echo "Hello, One! Value is: ${{ github.event.inputs.one}}"
+
     - name: Echo One
-      if: ${{ github.event.inputs.one}}
+      if: ${{ github.event.inputs.one }}
       run: | 
         echo "Hello, One! ${{ github.event.inputs.one}}"
 
     - name: Echo One More
       if: ${{ !github.event.inputs.one }}
+      run: | 
+        echo "Hello, One! ${{ github.event.inputs.one}}"
+
+    - name: Echo Another One
+      if: ${{ github.event.inputs.one == 'true'}}
+      run: | 
+        echo "Hello, One! ${{ github.event.inputs.one}}"
+
+    - name: Echo And Another One
+      if: ${{ github.event.inputs.one == 'false'}}
       run: | 
         echo "Hello, One! ${{ github.event.inputs.one}}"
 
