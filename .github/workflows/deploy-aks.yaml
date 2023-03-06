@@ -49,8 +49,7 @@ jobs:
           az group create --name mhsrg-${{ github.event.inputs.k8sName }} --location westeurope
            
     - name: Create plain AKS Cluster
-      if: ${{ !github.event.inputs.cilium }}
-      uses: azure/CLI@v1
+      if: ${{ !github.event.inputs.cilium == 'false'}}
       with:
         inlineScript: |
           echo az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 
@@ -58,7 +57,7 @@ jobs:
     
     - name: Create Cilium-enabled AKS Cluster
       continue-on-error: true
-      if: ${{ github.event.inputs.cilium }} 
+      if: ${{ github.event.inputs.cilium == 'true'}}
       uses: azure/CLI@v1
       with:
         inlineScript: |
@@ -67,13 +66,13 @@ jobs:
 
     - name: Get Context
       uses: azure/aks-set-context@v3
-      if: ${{ github.event.inputs.cilium }}
+      if: ${{ github.event.inputs.cilium == 'true'}}
       with:
         resource-group: mhsrg-${{ github.event.inputs.k8sName }}
         cluster-name: mhs-${{ github.event.inputs.k8sName }}
 
     - name: Install Cilium & Hubble
-      if: ${{ github.event.inputs.cilium }}
+      if: ${{ github.event.inputs.cilium == 'true'}}
       run: |           
         CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/master/stable.txt)
         CLI_ARCH=amd64
