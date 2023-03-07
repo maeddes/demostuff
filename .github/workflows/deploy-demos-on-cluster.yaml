@@ -92,6 +92,8 @@ jobs:
     - name: Deploy Spring Petclinic 
       continue-on-error: true
       run: |
+        pwd
+        ls -ltrR
         kubectl apply -f spring-petclinic-cloud/argocd -n spring-petclinic
 
     - name: Expose Spring Petclinic via Istio Ingress
