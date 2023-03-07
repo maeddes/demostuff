@@ -104,8 +104,8 @@ jobs:
       if: ${{ github.event.inputs.testkube == 'true'}}
       continue-on-error: true
       run: |
-        wget -qO - https://repo.testkube.io/key.pub | sudo apt-key add - && echo "deb https://repo.testkube.io/linux linux main" | sudo tee -a /etc/apt/sources.list && sudo apt-get update && sudo apt-get install -y testkube
-        testkube init
+        helm repo add kubeshop https://kubeshop.github.io/helm-charts
+        helm install testkube 
 
     - name: Install OpenTelemetry Demo
       if: ${{ github.event.inputs.otel == 'true'}}
