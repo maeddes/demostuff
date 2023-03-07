@@ -104,8 +104,9 @@ jobs:
       if: ${{ github.event.inputs.testkube == 'true'}}
       continue-on-error: true
       run: |
+        kubectl create namespace testkube
         helm repo add kubeshop https://kubeshop.github.io/helm-charts
-        helm install testkube kubeshop/testkube
+        helm install testkube kubeshop/testkube -n testkube
 
     - name: Install OpenTelemetry Demo
       if: ${{ github.event.inputs.otel == 'true'}}
