@@ -19,7 +19,7 @@ on:
         description: Cilium Hubble
         required: true
         type: boolean
-        default: false
+        default: true
 
       cilium:
         description: Cilium Grafana
