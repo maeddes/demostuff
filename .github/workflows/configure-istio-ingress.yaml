@@ -332,7 +332,7 @@ jobs:
           name: hubble
           namespace: istio-system
         spec:
-          host: hubble-ui.kube-system
+          host: hubble-ui.kube-system.svc.cluster.local
           trafficPolicy:
             tls:
               mode: DISABLE
