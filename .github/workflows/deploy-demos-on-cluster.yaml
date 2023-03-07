@@ -77,7 +77,7 @@ jobs:
       with:
         repository: maeddes/spring-petclinic-cloud
         ref: 'master'
-        path: '.'
+        path: './spring-petclinic-cloud'
 
     - name: Create Spring Petclinic Namespace
       continue-on-error: true
@@ -93,7 +93,7 @@ jobs:
       continue-on-error: true
       run: |
         pwd
-        ls -ltrR
+        ls -ltr
         kubectl apply -f spring-petclinic-cloud/argocd -n spring-petclinic
 
     - name: Expose Spring Petclinic via Istio Ingress
