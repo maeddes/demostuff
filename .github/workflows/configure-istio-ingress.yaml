@@ -14,6 +14,12 @@ on:
         required: true
         type: boolean
         default: false
+      
+      hubble:
+        description: Cilium Hubble
+        required: true
+        type: boolean
+        default: false
 
       cilium:
         description: Cilium Grafana
@@ -272,6 +278,61 @@ jobs:
           namespace: istio-system
         spec:
           host: tracing
+          trafficPolicy:
+            tls:
+              mode: DISABLE
+        ---
+        EOF
+
+    - name: Configure Hubble Stuff
+      if: ${{ github.event.inputs.hubble }}
+      continue-on-error: true
+      run: |
+
+        export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+        export INGRESS_DOMAIN=${INGRESS_HOST}.nip.io
+
+        cat <<EOF | kubectl apply -f -
+        apiVersion: networking.istio.io/v1alpha3
+        kind: Gateway
+        metadata:
+          name: hubble-gateway
+          namespace: istio-system
+        spec:
+          selector:
+            istio: ingressgateway
+          servers:
+          - port:
+              number: 80
+              name: http-k8shubble
+              protocol: HTTP
+            hosts:
+            - "hubble.${INGRESS_DOMAIN}"
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: VirtualService
+        metadata:
+          name: hubble-vs
+          namespace: istio-system
+        spec:
+          hosts:
+          - "hubble.${INGRESS_DOMAIN}"
+          gateways:
+          - hubble-gateway
+          http:
+          - route:
+            - destination:
+                host: hubble-ui.kube-system.svc.cluster.local
+                port:
+                  number: 80
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: DestinationRule
+        metadata:
+          name: hubble
+          namespace: istio-system
+        spec:
+          host: hubble-ui.kube-system
           trafficPolicy:
             tls:
               mode: DISABLE
