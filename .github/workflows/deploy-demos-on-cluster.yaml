@@ -1,0 +1,162 @@
+name: Deploy stuff on AKS
+
+on:
+  workflow_dispatch: 
+    inputs:
+      k8sName:
+        description: k8sname
+        required: true
+        type: string
+        default: 'abc'
+
+      otel:
+        description: OpenTelemetry
+        required: true
+        type: boolean
+        default: false
+
+      petclinic:
+        description: Spring Petclinic
+        required: true
+        type: boolean
+        default: false
+
+      petclinic-istio:
+        description: Spring Petclinic Istio enabled
+        required: true
+        type: boolean
+        default: false
+
+      dqualizer:
+        description: dqualizer
+        required: true
+        type: boolean
+        default: false
+
+      ocelot:
+        description: ocelot
+        required: true
+        type: boolean
+        default: false
+
+
+
+jobs: 
+  deploy-stuff-on-cluster:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Echo Something
+      run: | 
+        echo "Hello, Welt !"
+      
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+
+    - name: Display az cli version
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az version
+
+    - name: Get Context
+      uses: azure/aks-set-context@v3
+      with:
+        resource-group: mhsrg-${{ github.event.inputs.k8sName }}
+        cluster-name: mhs-${{ github.event.inputs.k8sName }}
+
+    - name: Install OpenTelemetry Demo
+      if: ${{ github.event.inputs.otel == 'true'}}
+      continue-on-error: true
+      run: |
+        kubectl create namespace otel
+        helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+        helm install my-otel-demo-tmp open-telemetry/opentelemetry-demo -n otel  
+
+    - name: Checkout Petclinic
+      uses: actions/checkout@v3
+      with:
+        repository: maeddes/spring-petclinic-cloud
+        ref: 'master'
+
+    - name: Create Spring Petclinic Namespace
+      continue-on-error: true
+      run: |
+        kubectl create namespace spring-petclinic
+
+    - name: Enable Spring Petclinic Namespace for Istio
+      continue-on-error: true
+      run: |
+        kubectl label namespace spring-petclinic istio-injection=enabled --overwrite
+
+    - name: Deploy Spring Petclinic 
+      continue-on-error: true
+      run: |
+        kubectl apply -f spring-petclinic-cloud/argocd -n spring-petclinic
+
+    - name: Expose Spring Petclinic via Istio Ingress
+      continue-on-error: true
+      run: |
+
+        export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+        export INGRESS_DOMAIN=${INGRESS_HOST}.nip.io
+
+        cat <<EOF | kubectl apply -f -
+        apiVersion: networking.istio.io/v1alpha3
+        kind: Gateway
+        metadata:
+          name: petclinic-gateway
+          namespace: istio-system
+        spec:
+          selector:
+            istio: ingressgateway
+          servers:
+          - port:
+              number: 80
+              name: http-petclinic
+              protocol: HTTP
+            hosts:
+            - "grafana.${INGRESS_DOMAIN}"
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: VirtualService
+        metadata:
+          name: petclinic-vs
+          namespace: istio-system
+        spec:
+          hosts:
+          - "petclinic.${INGRESS_DOMAIN}"
+          gateways:
+          - petclinic-gateway
+          http:
+          - route:
+            - destination:
+                host: api-gateway.spring-petclinic.svc.cluster.local
+                port:
+                  number: 80
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: DestinationRule
+        metadata:
+          name: petclinic
+          namespace: istio-system
+        spec:
+          host: petclinic
+          trafficPolicy:
+            tls:
+              mode: DISABLE
+        ---
+        EOF
+
+
+    - name: Bill of materials
+      continue-on-error: true
+      run: |
+        export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+        export INGRESS_DOMAIN=${INGRESS_HOST}.nip.io
+        
+        echo Ingress Host: $INGRESS_DOMAIN Ingress Domain: $INGRESS_DOMAIN
+        
+        echo http://petclinic.${INGRESS_DOMAIN}
+        kubectl get svc api-gateway -n spring-petclinic
