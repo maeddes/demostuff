@@ -1,4 +1,4 @@
-name: Deploy stuff on AKS
+name: Deploy Demos on AKS
 
 on:
   workflow_dispatch: 
@@ -38,8 +38,6 @@ on:
         required: true
         type: boolean
         default: false
-
-
 
 jobs: 
   deploy-stuff-on-cluster:
