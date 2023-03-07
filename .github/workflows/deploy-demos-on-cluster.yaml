@@ -118,7 +118,7 @@ jobs:
               name: http-petclinic
               protocol: HTTP
             hosts:
-            - "grafana.${INGRESS_DOMAIN}"
+            - "petclinic.${INGRESS_DOMAIN}"
         ---
         apiVersion: networking.istio.io/v1alpha3
         kind: VirtualService
@@ -143,7 +143,7 @@ jobs:
           name: petclinic
           namespace: istio-system
         spec:
-          host: petclinic
+          host: petclinic.spring-petclinic
           trafficPolicy:
             tls:
               mode: DISABLE
