@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: scotel-product
+  name: scotel-product
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scotel-product
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: scotel-product
+    spec:
+      containers:
+      - image: maeddes/scotel-product:v1
+        name: scotel-product
+        env:
+        - name: SPRING_SLEUTH_OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://my-otel-demo-tmp-otelcol.otel.svc.cluster.local:4317
+        resources: {}
+status: {}
