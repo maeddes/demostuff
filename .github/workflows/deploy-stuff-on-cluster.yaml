@@ -27,6 +27,12 @@ on:
         type: boolean
         default: false
 
+      nginx:
+        description: nginx Ingress Controller
+        required: true
+        type: boolean
+        default: false
+
       testkube:
         description: Testkube
         required: true
@@ -99,6 +105,12 @@ jobs:
         curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.17.1 sh -
         istio-1.17.1/bin/istioctl install --set profile=default -y 
         kubectl apply -f istio-1.17.1/samples/addons
+
+    - name: Install nginx Ingress Controller
+      if: ${{ github.event.inputs.nginx == 'true'}}
+      continue-on-error: true
+      run: |
+        helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace
 
     - name: Install TestKube
       if: ${{ github.event.inputs.testkube == 'true'}}
