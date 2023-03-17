@@ -68,9 +68,8 @@ jobs:
       if: ${{ github.event.inputs.otel == 'true'}}
       continue-on-error: true
       run: |
-        kubectl create namespace otel
         helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
-        helm install oteldemo open-telemetry/opentelemetry-demo -n otel  
+        helm install oteldemo open-telemetry/opentelemetry-demo -n otel --create-namespace
 
     - name: Checkout Petclinic
       uses: actions/checkout@v3

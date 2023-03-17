@@ -39,12 +39,6 @@ on:
         type: boolean
         default: false
 
-      otel:
-        description: OpenTelemetry
-        required: true
-        type: boolean
-        default: false
-
       dqualizer:
         description: dqualizer
         required: true
@@ -116,17 +110,8 @@ jobs:
       if: ${{ github.event.inputs.testkube == 'true'}}
       continue-on-error: true
       run: |
-        kubectl create namespace testkube
         helm repo add kubeshop https://kubeshop.github.io/helm-charts
-        helm install testkube kubeshop/testkube -n testkube
-
-    - name: Install OpenTelemetry Demo
-      if: ${{ github.event.inputs.otel == 'true'}}
-      continue-on-error: true
-      run: |
-        kubectl create namespace otel
-        helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
-        helm install my-otel-demo-tmp open-telemetry/opentelemetry-demo -n otel  
+        helm install testkube kubeshop/testkube -n testkube --create-namespace
 
     - name: Bill of materials
       continue-on-error: true
