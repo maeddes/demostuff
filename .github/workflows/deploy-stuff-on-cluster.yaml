@@ -91,7 +91,12 @@ jobs:
       continue-on-error: true
       run: |
         kubectl apply -f https://raw.githubusercontent.com/cilium/cilium/v1.13/examples/kubernetes/addons/prometheus/monitoring-example.yaml   
-
+        cilium config set --restart=false prometheus.enabled true
+        cilium config set --restart=false operator.prometheus.enabled true
+        cilium config set --restart=false hubble.enabled true
+        cilium config set --restart=false hubble.metrics.enableOpenMetrics true
+        cilium config set --restart=false hubble.metrics.enabled "{dns,drop,tcp,flow,port-distribution,icmp,httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction}"
+        
     - name: Install Istio
       if: ${{ github.event.inputs.istio == 'true'}}
       continue-on-error: true

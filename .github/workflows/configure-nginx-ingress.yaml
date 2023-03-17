@@ -110,7 +110,7 @@ jobs:
         spec:
           ingressClassName: nginx
           rules:
-            - host: hubble.${INGRESS_IP}.nip.io
+            - host: hubble.${INGRESS_DOMAIN}
               http:
                 paths:
                   - pathType: Prefix
@@ -141,72 +141,16 @@ jobs:
         spec:
           ingressClassName: nginx
           rules:
-            - host: otel.${INGRESS_IP}.nip.io
+            - host: otel.${INGRESS_DOMAIN}
               http:
                 paths:
                   - pathType: Prefix
                     backend:
                       service:
-                        name: my-otel-demo-tmp-frontendproxy
+                        name: oteldemo-frontendproxy
                         port:
                           number: 80
                     path: /
-        ---
-        EOF
-
-
-    - name: Configure Kubetest Stuff
-      if: ${{ github.event.inputs.otel }}
-      continue-on-error: true
-      run: |
-
-        export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-        export INGRESS_DOMAIN=${INGRESS_HOST}.nip.io
-
-        cat <<EOF | kubectl apply -f -
-        apiVersion: networking.istio.io/v1alpha3
-        kind: Gateway
-        metadata:
-          name: testkube-gateway
-          namespace: istio-system
-        spec:
-          selector:
-            istio: ingressgateway
-          servers:
-          - port:
-              number: 80
-              name: http-k8stestkube
-              protocol: HTTP
-            hosts:
-            - "testkube.${INGRESS_DOMAIN}"
-        ---
-        apiVersion: networking.istio.io/v1alpha3
-        kind: VirtualService
-        metadata:
-          name: testkube-vs
-          namespace: istio-system
-        spec:
-          hosts:
-          - "testkube.${INGRESS_DOMAIN}"
-          gateways:
-          - testkube-gateway
-          http:
-          - route:
-            - destination:
-                host: testkube-dashboard.testkube.svc.cluster.local
-                port:
-                  number: 8080
-        ---
-        apiVersion: networking.istio.io/v1alpha3
-        kind: DestinationRule
-        metadata:
-          name: testkube
-          namespace: istio-system
-        spec:
-          host: testkube-dashboard.testkube
-          trafficPolicy:
-            tls:
-              mode: DISABLE
         ---
         EOF
 
@@ -215,16 +159,12 @@ jobs:
       continue-on-error: true
       run: |
 
-        export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-        export INGRESS_DOMAIN=${INGRESS_HOST}.nip.io
-        
+        export INGRESS_IP=$(kubectl get service --namespace ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[].ip}')
+        echo $INGRESS_IP
+        export INGRESS_DOMAIN=${INGRESS_IP}.nip.io       
         echo Ingress Host: $INGRESS_DOMAIN Ingress Domain: $INGRESS_DOMAIN
         
-        echo http://kiali.${INGRESS_DOMAIN}
         echo http://hubble.${INGRESS_DOMAIN}
-        echo http://grafana.${INGRESS_DOMAIN}
-        echo http://testkube.${INGRESS_DOMAIN}
-        echo http://tracing.${INGRESS_DOMAIN}
         echo http://otel.${INGRESS_DOMAIN}
 
 
