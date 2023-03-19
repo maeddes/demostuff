@@ -78,6 +78,7 @@ jobs:
         helm install oteldemo open-telemetry/opentelemetry-demo -n otel --create-namespace
 
     - name: Checkout Petclinic
+      if: ${{ github.event.inputs.petclinic == 'true'}}
       uses: actions/checkout@v3
       with:
         repository: maeddes/spring-petclinic-cloud
@@ -85,16 +86,19 @@ jobs:
         path: './spring-petclinic-cloud'
 
     - name: Create Spring Petclinic Namespace
+      if: ${{ github.event.inputs.petclinic == 'true' }}
       continue-on-error: true
       run: |
         kubectl create namespace spring-petclinic
 
     - name: Enable Spring Petclinic Namespace for Istio
+      if: ${{ github.event.inputs.petclinic-istio == 'true' }}
       continue-on-error: true
       run: |
         kubectl label namespace spring-petclinic istio-injection=enabled --overwrite
 
     - name: Deploy Spring Petclinic 
+      if: ${{ github.event.inputs.petclinic == 'true' }}
       continue-on-error: true
       run: |
         pwd
@@ -102,6 +106,7 @@ jobs:
         kubectl apply -f spring-petclinic-cloud/argocd -n spring-petclinic
 
     - name: Expose Spring Petclinic via Istio Ingress
+      if: ${{ github.event.inputs.petclinic-istio == 'true' }}
       continue-on-error: true
       run: |
 
@@ -170,7 +175,10 @@ jobs:
       run: |
         kubectl create namespace todoapp
         kubectl config set-context --current --namespace=todoapp
+        pwd
+        ls -ltr
         cd technologyconsulting-containerexerciseapp
+        pwd
         sh -c deployAll.sh
 
     - name: Bill of materials
