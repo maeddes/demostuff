@@ -27,6 +27,12 @@ on:
         type: boolean
         default: false
 
+      todoapp:
+        description: Novatec TodoApp Sample
+        required: true
+        type: boolean
+        default: true
+
       dqualizer:
         description: dqualizer
         required: true
@@ -149,6 +155,23 @@ jobs:
         ---
         EOF
 
+    - name: Checkout Todo App
+      if: ${{ github.event.inputs.todoapp == 'true'}}
+      continue-on-error: true
+      uses: actions/checkout@v3
+      with:
+        repository: maeddes/technologyconsulting-containerexerciseapp
+        ref: 'master'
+        path: './technologyconsulting-containerexerciseapp'
+
+    - name: Novatec Sample Todo Application
+      if: ${{ github.event.inputs.todoapp == 'true'}}
+      continue-on-error: true
+      run: |
+        kubectl create namespace todoapp
+        kubectl config set-context --current --namespace=todoapp
+        cd technologyconsulting-containerexerciseapp
+        sh -c deployAll.sh
 
     - name: Bill of materials
       continue-on-error: true
