@@ -180,7 +180,7 @@ jobs:
         cd technologyconsulting-containerexerciseapp
         pwd
         ls -ltr
-        sh -c deployAll.sh
+        deployAll.sh
 
     - name: Bill of materials
       continue-on-error: true
