@@ -173,10 +173,9 @@ jobs:
       if: ${{ github.event.inputs.todoapp == 'true'}}
       continue-on-error: true
       run: |
-        kubectl create namespace todoapp
+        echo create ns if not exists ..
+        kubectl create namespace todoapp --dry-run=client -o yaml | kubectl apply -f -
         kubectl config set-context --current --namespace=todoapp
-        pwd
-        ls -ltr
         cd technologyconsulting-containerexerciseapp
         pwd
         ls -ltr
