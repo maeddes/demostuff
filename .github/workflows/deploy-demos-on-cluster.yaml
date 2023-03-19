@@ -179,6 +179,7 @@ jobs:
         ls -ltr
         cd technologyconsulting-containerexerciseapp
         pwd
+        ls -ltr
         sh -c deployAll.sh
 
     - name: Bill of materials
