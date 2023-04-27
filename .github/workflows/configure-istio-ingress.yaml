@@ -377,7 +377,7 @@ jobs:
           http:
           - route:
             - destination:
-                host: my-otel-demo-tmp-frontendproxy.otel.svc.cluster.local
+                host: oteldemo-frontendproxy.otel.svc.cluster.local
                 port:
                   number: 8080
         ---
@@ -387,7 +387,7 @@ jobs:
           name: otel
           namespace: istio-system
         spec:
-          host: my-otel-demo-tmp-frontendproxy.otel
+          host: oteldemo-frontendproxy.otel
           trafficPolicy:
             tls:
               mode: DISABLE

@@ -147,7 +147,7 @@ jobs:
                   - pathType: Prefix
                     backend:
                       service:
-                        name: oteldemo-frontendproxy
+                        name: oteldemo-frontendproxy.otel.svc.cluster.local
                         port:
                           number: 8080
                     path: /
