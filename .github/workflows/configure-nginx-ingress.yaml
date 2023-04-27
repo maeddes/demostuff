@@ -149,7 +149,7 @@ jobs:
                       service:
                         name: oteldemo-frontendproxy
                         port:
-                          number: 80
+                          number: 8080
                     path: /
         ---
         EOF
