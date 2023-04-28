@@ -460,10 +460,14 @@ jobs:
         echo Ingress Host: $INGRESS_DOMAIN Ingress Domain: $INGRESS_DOMAIN
         
         echo http://kiali.${INGRESS_DOMAIN}
-        echo http://hubble.${INGRESS_DOMAIN}
+        echo http://prometheus.${INGRESS_DOMAIN}
         echo http://grafana.${INGRESS_DOMAIN}
-        echo http://testkube.${INGRESS_DOMAIN}
         echo http://tracing.${INGRESS_DOMAIN}
+
+        echo http://hubble.${INGRESS_DOMAIN}
+
+        echo http://testkube.${INGRESS_DOMAIN}
+
         echo http://otel.${INGRESS_DOMAIN}
 
 
