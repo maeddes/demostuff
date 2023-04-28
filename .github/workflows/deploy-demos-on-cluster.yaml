@@ -15,6 +15,12 @@ on:
         type: boolean
         default: false
 
+      otel-istio:
+        description: Enable OpenTelemetry for Istio
+        required: true
+        type: boolean
+        default: false
+
       petclinic:
         description: Spring Petclinic
         required: true
@@ -22,7 +28,7 @@ on:
         default: false
 
       petclinic-istio:
-        description: Spring Petclinic Istio enabled
+        description: Enable Petclinic for Istio 
         required: true
         type: boolean
         default: false
@@ -69,6 +75,13 @@ jobs:
       with:
         resource-group: mhsrg-${{ github.event.inputs.k8sName }}
         cluster-name: mhs-${{ github.event.inputs.k8sName }}
+
+    - name: Enable OpenTelemetry Namespace for Istio
+      if: ${{ github.event.inputs.otel-istio == 'true' }}
+      continue-on-error: true
+      run: |
+        kubectl create namespace otel
+        kubectl label namespace otel istio-injection=enabled --overwrite
 
     - name: Install OpenTelemetry Demo
       if: ${{ github.event.inputs.otel == 'true'}}
