@@ -31,7 +31,7 @@ on:
         description: Cilium Hubble
         required: true
         type: boolean
-        default: true
+        default: false
 
       cilium:
         description: Cilium Grafana
@@ -43,13 +43,13 @@ on:
         description: Testkube
         required: true
         type: boolean
-        default: true
+        default: false
 
       otel:
         description: OpenTelemetry
         required: true
         type: boolean
-        default: true
+        default: false
 
       dqualizer:
         description: dqualizer
