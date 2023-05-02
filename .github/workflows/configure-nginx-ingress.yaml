@@ -9,6 +9,18 @@ on:
         type: string
         default: 'abc'
 
+      headlamp:
+        description: headlamp
+        required: true
+        type: boolean
+        default: true
+
+      skooner:
+        description: skooner
+        required: true
+        type: boolean
+        default: false
+
       argocd:
         description: ArgoCD
         required: true
@@ -90,7 +102,67 @@ jobs:
         export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
         export INGRESS_DOMAIN=${INGRESS_HOST}.nip.io
 
+    - name: Configure Headlamp Stuff
+      if: ${{ github.event.inputs.headlamp }}
+      continue-on-error: true
+      run: |
+
+        export INGRESS_IP=$(kubectl get service --namespace ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[].ip}')
+        echo $INGRESS_IP
+        export INGRESS_DOMAIN=${INGRESS_IP}.nip.io
+
+        cat <<EOF | kubectl apply -f -
+        kind: Ingress
+        apiVersion: networking.k8s.io/v1
+        metadata:
+          name: headlamp
+          namespace: kube-system
+        spec:
+          ingressClassName: nginx
+          rules:
+            - host: headlamp.${INGRESS_DOMAIN}
+              http:
+                paths:
+                  - path: /
+                    backend:
+                      service:
+                        name: headlamp
+                        port:
+                          number: 80
+                    pathType: ImplementationSpecific
+        ---
+        EOF
         
+    - name: Configure Skooner Stuff
+      if: ${{ github.event.inputs.headlamp }}
+      continue-on-error: true
+      run: |
+
+        export INGRESS_IP=$(kubectl get service --namespace ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[].ip}')
+        echo $INGRESS_IP
+        export INGRESS_DOMAIN=${INGRESS_IP}.nip.io
+
+        cat <<EOF | kubectl apply -f -
+        kind: Ingress
+        apiVersion: networking.k8s.io/v1
+        metadata:
+          name: skooner
+          namespace: kube-system
+        spec:
+          ingressClassName: nginx
+          rules:
+            - host: skooner.${INGRESS_DOMAIN}
+              http:
+                paths:
+                  - path: /
+                    backend:
+                      service:
+                        name: skooner
+                        port:
+                          number: 80
+                    pathType: ImplementationSpecific
+        ---
+        EOF
 
     - name: Configure Hubble Stuff
       if: ${{ github.event.inputs.hubble }}
