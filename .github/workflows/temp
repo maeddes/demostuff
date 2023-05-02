@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: otel
+  namespace: otel
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: otel.${INGRESS_DOMAIN}
+      http:
+        paths:
+          - pathType: Prefix
+            backend:
+              service:
+                name: oteldemo-frontendproxy.otel.svc.cluster.local
+                port:
+                  number: 8080
+            path: /
+
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: skooner
+  namespace: kube-system
+spec:
+  rules:
+    - host: skooner.${INGRESS_DOMAIN}
+      http:
+        paths:
+          - path: /
+            backend:
+              service:
+                name: skooner
+                port:
+                  number: 80
+            pathType: ImplementationSpecific
