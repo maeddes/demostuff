@@ -235,7 +235,11 @@ jobs:
         echo $INGRESS_IP
         export INGRESS_DOMAIN=${INGRESS_IP}.nip.io       
         echo Ingress Host: $INGRESS_DOMAIN Ingress Domain: $INGRESS_DOMAIN
-        
+
+        echo ${{ github.event.inputs.headlamp }}
+
+        echo http://headlamp.${INGRESS_DOMAIN}
+        echo http://skooner.${INGRESS_DOMAIN}        
         echo http://hubble.${INGRESS_DOMAIN}
         echo http://otel.${INGRESS_DOMAIN}
 
