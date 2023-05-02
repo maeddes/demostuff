@@ -16,7 +16,7 @@ on:
         default: true
 
       petclinic:
-        description: OpenTelemetry
+        description: Spring Petclinic
         required: true
         type: boolean
         default: true
