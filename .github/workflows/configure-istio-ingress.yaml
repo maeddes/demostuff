@@ -9,32 +9,14 @@ on:
         type: string
         default: 'abc'
 
-      argocd:
-        description: ArgoCD
-        required: true
-        type: boolean
-        default: false
-      
-      hubble:
-        description: Cilium Hubble
-        required: true
-        type: boolean
-        default: true
-
-      cilium:
-        description: Cilium Grafana
-        required: true
-        type: boolean
-        default: false
-
       istio:
         description: Istio
         required: true
         type: boolean
         default: true
 
-      testkube:
-        description: Testkube
+      petclinic:
+        description: OpenTelemetry
         required: true
         type: boolean
         default: true
@@ -44,18 +26,6 @@ on:
         required: true
         type: boolean
         default: true
-
-      dqualizer:
-        description: dqualizer
-        required: true
-        type: boolean
-        default: false
-
-      ocelot:
-        description: ocelot
-        required: true
-        type: boolean
-        default: false
 
 jobs: 
   configure-ingress:
@@ -81,12 +51,6 @@ jobs:
       with:
         resource-group: mhsrg-${{ github.event.inputs.k8sName }}
         cluster-name: mhs-${{ github.event.inputs.k8sName }}
-
-    - name: Configure ArgoCD
-      if: ${{ github.event.inputs.argocd }}
-      continue-on-error: true
-      run: |
-        echo not yet solved
 
     - name: Configure Istio Stuff
       if: ${{ github.event.inputs.istio }}
@@ -284,8 +248,8 @@ jobs:
         ---
         EOF
 
-    - name: Configure Hubble Stuff
-      if: ${{ github.event.inputs.hubble }}
+    - name: Configure Petclinic Stuff
+      if: ${{ github.event.inputs.petclinic }}
       continue-on-error: true
       run: |
 
@@ -296,7 +260,7 @@ jobs:
         apiVersion: networking.istio.io/v1alpha3
         kind: Gateway
         metadata:
-          name: hubble-gateway
+          name: petclinic-gateway
           namespace: istio-system
         spec:
           selector:
@@ -304,35 +268,35 @@ jobs:
           servers:
           - port:
               number: 80
-              name: http-k8shubble
+              name: http-petclinic
               protocol: HTTP
             hosts:
-            - "hubble.${INGRESS_DOMAIN}"
+            - "petclinic.${INGRESS_DOMAIN}"
         ---
         apiVersion: networking.istio.io/v1alpha3
         kind: VirtualService
         metadata:
-          name: hubble-vs
+          name: petclinic-vs
           namespace: istio-system
         spec:
           hosts:
-          - "hubble.${INGRESS_DOMAIN}"
+          - "petclinic.${INGRESS_DOMAIN}"
           gateways:
           - hubble-gateway
           http:
           - route:
             - destination:
-                host: hubble-ui.kube-system.svc.cluster.local
+                host: api-gateway.spring-petclinic.svc.cluster.local
                 port:
                   number: 80
         ---
         apiVersion: networking.istio.io/v1alpha3
         kind: DestinationRule
         metadata:
-          name: hubble
+          name: petclinic
           namespace: istio-system
         spec:
-          host: hubble-ui.kube-system.svc.cluster.local
+          host: api-gateway.spring-petclinic.svc.cluster.local
           trafficPolicy:
             tls:
               mode: DISABLE
@@ -394,62 +358,6 @@ jobs:
         ---
         EOF
 
-    - name: Configure Kubetest Stuff
-      if: ${{ github.event.inputs.otel }}
-      continue-on-error: true
-      run: |
-
-        export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-        export INGRESS_DOMAIN=${INGRESS_HOST}.nip.io
-
-        cat <<EOF | kubectl apply -f -
-        apiVersion: networking.istio.io/v1alpha3
-        kind: Gateway
-        metadata:
-          name: testkube-gateway
-          namespace: istio-system
-        spec:
-          selector:
-            istio: ingressgateway
-          servers:
-          - port:
-              number: 80
-              name: http-k8stestkube
-              protocol: HTTP
-            hosts:
-            - "testkube.${INGRESS_DOMAIN}"
-        ---
-        apiVersion: networking.istio.io/v1alpha3
-        kind: VirtualService
-        metadata:
-          name: testkube-vs
-          namespace: istio-system
-        spec:
-          hosts:
-          - "testkube.${INGRESS_DOMAIN}"
-          gateways:
-          - testkube-gateway
-          http:
-          - route:
-            - destination:
-                host: testkube-dashboard.testkube.svc.cluster.local
-                port:
-                  number: 8080
-        ---
-        apiVersion: networking.istio.io/v1alpha3
-        kind: DestinationRule
-        metadata:
-          name: testkube
-          namespace: istio-system
-        spec:
-          host: testkube-dashboard.testkube
-          trafficPolicy:
-            tls:
-              mode: DISABLE
-        ---
-        EOF
-
-
     - name: Bill of materials
       continue-on-error: true
       run: |
@@ -464,11 +372,8 @@ jobs:
         echo http://grafana.${INGRESS_DOMAIN}
         echo http://tracing.${INGRESS_DOMAIN}
 
-        echo http://hubble.${INGRESS_DOMAIN}
-
-        echo http://testkube.${INGRESS_DOMAIN}
-
         echo http://otel.${INGRESS_DOMAIN}
+        echo http://petclinic.${INGRESS_DOMAIN}
 
 
         kubectl get svc argocd-server -n argocd

@@ -134,7 +134,7 @@ jobs:
         EOF
         
     - name: Configure Skooner Stuff
-      if: ${{ github.event.inputs.headlamp }}
+      if: ${{ github.event.inputs.skooner }}
       continue-on-error: true
       run: |
 
