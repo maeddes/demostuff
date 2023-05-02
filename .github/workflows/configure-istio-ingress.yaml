@@ -282,7 +282,7 @@ jobs:
           hosts:
           - "petclinic.${INGRESS_DOMAIN}"
           gateways:
-          - hubble-gateway
+          - petclinic-gateway
           http:
           - route:
             - destination:
