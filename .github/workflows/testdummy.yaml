@@ -17,6 +17,8 @@ jobs:
     - name: Cilium Install
       continue-on-error: true
       run: | 
-        az version
-        gcloud version
+
+echo is the indentation
+      echo important
+            echo in a run block?
 
