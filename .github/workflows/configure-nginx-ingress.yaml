@@ -57,12 +57,6 @@ on:
         type: booelan
         default: false
 
-      dqualizer:
-        description: dqualizer
-        required: true
-        type: boolean
-        default: false
-
       ocelot:
         description: ocelot
         required: true
