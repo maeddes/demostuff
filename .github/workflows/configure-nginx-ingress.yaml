@@ -226,6 +226,67 @@ jobs:
         ---
         EOF
 
+    - name: Configure Petclinic Stuff
+      if: ${{ github.event.inputs.petclinic }}
+      continue-on-error: true
+      run: |
+
+        export INGRESS_IP=$(kubectl get service --namespace ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[].ip}')
+        echo $INGRESS_IP
+        export INGRESS_DOMAIN=${INGRESS_IP}.nip.io
+
+        cat <<EOF | kubectl apply -f -
+        kind: Ingress
+        apiVersion: networking.k8s.io/v1
+        metadata:
+          name: petclinic
+          namespace: spring-petclinic
+        spec:
+          ingressClassName: nginx
+          rules:
+            - host: petclinic.${INGRESS_DOMAIN}
+              http:
+                paths:
+                  - path: /
+                    backend:
+                      service:
+                        name: api-gateway.spring-petclinic.svc.cluster.local
+                        port:
+                          number: 80
+                    pathType: ImplementationSpecific
+        ---
+        EOF
+
+    - name: Configure Todo App Stuff
+      if: ${{ github.event.inputs.todoapp }}
+      continue-on-error: true
+      run: |
+
+        export INGRESS_IP=$(kubectl get service --namespace ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[].ip}')
+        echo $INGRESS_IP
+        export INGRESS_DOMAIN=${INGRESS_IP}.nip.io
+
+        cat <<EOF | kubectl apply -f -
+        kind: Ingress
+        apiVersion: networking.k8s.io/v1
+        metadata:
+          name: todoapp
+          namespace: todoapp
+        spec:
+          ingressClassName: nginx
+          rules:
+            - host: todoui.${INGRESS_DOMAIN}
+              http:
+                paths:
+                  - path: /
+                    backend:
+                      service:
+                        name: todoui.todoapp
+                        port:
+                          number: 8090
+                    pathType: ImplementationSpecific
+        ---
+        EOF
 
     - name: Bill of materials
       continue-on-error: true
@@ -242,7 +303,7 @@ jobs:
         echo http://skooner.${INGRESS_DOMAIN}        
         echo http://hubble.${INGRESS_DOMAIN}
         echo http://otel.${INGRESS_DOMAIN}
-
+        echo http://petclinic.${INGRESS_DOMAIN}
 
         kubectl get svc argocd-server -n argocd
         
