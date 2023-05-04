@@ -246,7 +246,7 @@ jobs:
                   - path: /
                     backend:
                       service:
-                        name: api-gateway.spring-petclinic.svc.cluster.local
+                        name: api-gateway
                         port:
                           number: 80
                     pathType: ImplementationSpecific
@@ -277,7 +277,7 @@ jobs:
                   - path: /
                     backend:
                       service:
-                        name: todoui.todoapp
+                        name: todoui
                         port:
                           number: 8090
                     pathType: ImplementationSpecific
@@ -300,6 +300,7 @@ jobs:
         echo http://hubble.${INGRESS_DOMAIN}
         echo http://otel.${INGRESS_DOMAIN}
         echo http://petclinic.${INGRESS_DOMAIN}
+        echo http://todoui.${INGRESS_DOMAIN}
 
         kubectl get svc argocd-server -n argocd
         
