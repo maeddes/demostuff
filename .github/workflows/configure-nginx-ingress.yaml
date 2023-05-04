@@ -48,13 +48,13 @@ on:
       petclinic:
         description: Spring Petclinic
         required: true
-        type: booelan
+        type: boolean
         default: false
 
       todoapp:
         description: TodoApp
         required: true
-        type: booelan
+        type: boolean
         default: false
 
 
