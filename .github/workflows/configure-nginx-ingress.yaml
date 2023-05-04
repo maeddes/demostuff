@@ -51,6 +51,12 @@ on:
         type: boolean
         default: false
 
+      petclinic:
+        description: Spring Petclinic
+        required: true
+        type: boolean
+        default: false
+
       dqualizer:
         description: dqualizer
         required: true
