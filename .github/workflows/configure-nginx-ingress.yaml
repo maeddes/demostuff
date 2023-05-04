@@ -51,6 +51,12 @@ on:
         type: boolean
         default: false
 
+      todoapp:
+        description: TodoApp
+        required: true
+        type: booelan
+        default: false
+
       dqualizer:
         description: dqualizer
         required: true
