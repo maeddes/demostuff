@@ -20,12 +20,6 @@ on:
         required: true
         type: boolean
         default: false
-
-      argocd:
-        description: ArgoCD
-        required: true
-        type: boolean
-        default: false
       
       hubble:
         description: Cilium Hubble
@@ -51,17 +45,19 @@ on:
         type: boolean
         default: false
 
+      petclinic:
+        description: Spring Petclinic
+        required: true
+        type: booelan
+        default: false
+
       todoapp:
         description: TodoApp
         required: true
         type: booelan
         default: false
 
-      ocelot:
-        description: ocelot
-        required: true
-        type: boolean
-        default: false
+
 
 jobs: 
   configure-ingress:
