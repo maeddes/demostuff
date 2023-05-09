@@ -212,7 +212,7 @@ jobs:
             - host: otel.${INGRESS_DOMAIN}
               http:
                 paths:
-                  - pathType: Prefix
+                  - pathType: ImplementationSpecific
                     backend:
                       service:
                         name: oteldemo-frontendproxy
