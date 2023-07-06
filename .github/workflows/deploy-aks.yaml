@@ -83,8 +83,8 @@ jobs:
         curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
         sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
         rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
-        echo cilium install --azure-resource-group "mhsrg-${{ github.event.inputs.k8sName }}"
-        cilium install --azure-resource-group "mhsrg-${{ github.event.inputs.k8sName }}"
+        echo cilium install --helm-set=azure.resourceGroup="mhsrg-${{ github.event.inputs.k8sName }}"
+        cilium install --helm-set=azure.resourceGroup="mhsrg-${{ github.event.inputs.k8sName }}"
         cilium status --wait
 
         export HUBBLE_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/hubble/master/stable.txt)

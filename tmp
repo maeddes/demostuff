@@ -52,3 +52,29 @@ EOF
       run: |
         wget -qO - https://repo.testkube.io/key.pub | sudo apt-key add - && echo "deb https://repo.testkube.io/linux linux main" | sudo tee -a /etc/apt/sources.list && sudo apt-get update && sudo apt-get install -y testkube
         testkube init
+
+export INGRESS_IP=$(kubectl get service --namespace ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[].ip}')
+echo $INGRESS_IP
+export INGRESS_DOMAIN=${INGRESS_IP}.nip.io
+
+cat <<EOF | kubectl apply -f -
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: otel
+  namespace: otel
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: otel.${INGRESS_DOMAIN}
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: oteldemo-frontendproxy
+                port:
+                  number: 8080
+            path: /
+---
+EOF
