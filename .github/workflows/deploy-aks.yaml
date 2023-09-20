@@ -28,7 +28,7 @@ jobs:
     steps:
     - name: Echo Something
       run: | 
-        echo "Hello, Welt!"
+        echo "Hello, Welt :P"
 
       
     - name: Azure Login
