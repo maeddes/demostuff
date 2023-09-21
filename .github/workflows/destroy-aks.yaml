@@ -21,7 +21,7 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        creds: '${{ secrets.AZURE_PLAYGROUND }}'
 
     - name: Destroy AKS Cluster
       uses: azure/CLI@v1
