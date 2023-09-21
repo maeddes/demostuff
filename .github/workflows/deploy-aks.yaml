@@ -47,8 +47,8 @@ jobs:
       uses: azure/CLI@v1
       with:
         inlineScript: |
-          echo group create --name mhsrg-${{ github.event.inputs.k8sName }} --location westeurope
-          az group create --name mhsrg-${{ github.event.inputs.k8sName }} --location westeurope
+          echo group create --name mhsrg-${{ github.event.inputs.k8sName }} --location westeurope --tag shortname=mhs
+          az group create --name mhsrg-${{ github.event.inputs.k8sName }} --location westeurope --tag shortname=mhs
            
     - name: Create plain AKS Cluster
       if: ${{ github.event.inputs.cilium == 'false'}}
