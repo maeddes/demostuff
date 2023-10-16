@@ -16,6 +16,7 @@ jobs:
     - name: Echo Something
       run: | 
         echo "Hello, Welt!"
+        echo "Destroying" mhsrg-${{ github.event.inputs.k8sName }}
         echo ${{ github.event.inputs.nodeCount }}
       
     - name: Azure Login
