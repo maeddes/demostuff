@@ -27,6 +27,12 @@ on:
         type: boolean
         default: false
 
+      prometheus:
+        description: Prometheus Grafana
+        required: true
+        type: boolean
+        default: false
+        
       cilium:
         description: Cilium Grafana
         required: true
@@ -53,12 +59,6 @@ on:
 
       dqualizer:
         description: dqualizer
-        required: true
-        type: boolean
-        default: false
-
-      prometheus:
-        description: Prometheus Grafana
         required: true
         type: boolean
         default: false
