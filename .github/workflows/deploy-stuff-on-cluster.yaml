@@ -57,8 +57,8 @@ on:
         type: boolean
         default: false
 
-      ocelot:
-        description: ocelot
+      prometheus:
+        description: Prometheus Grafana
         required: true
         type: boolean
         default: false
