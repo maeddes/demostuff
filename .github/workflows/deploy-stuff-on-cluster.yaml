@@ -107,10 +107,7 @@ jobs:
     - name: Install Kube Prometheus Stack
       if: ${{ github.event.inputs.prometheus == 'true'}}
       run: |
-        helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-        helm repo add stable https://charts.helm.sh/stable
-        helm repo update
-        helm install prometheus prometheus-community/kube-prometheus-stack -n kube-prometheus-stack --create-namespace
+        echo ${{ github.event.inputs.prometheus }}
 
     - name: Install Skooner
       if: ${{ github.event.inputs.skooner == 'true'}}
