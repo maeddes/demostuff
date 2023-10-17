@@ -27,8 +27,8 @@ on:
         type: boolean
         default: false
 
-      prometheus:
-        description: Kube Prometheus Stack
+      prom:
+        description: KubePrometheusStack
         required: true
         type: boolean
         default: false     
