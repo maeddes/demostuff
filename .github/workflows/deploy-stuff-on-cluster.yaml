@@ -27,12 +27,6 @@ on:
         type: boolean
         default: false
 
-      prom:
-        description: KubePrometheusStack
-        required: true
-        type: boolean
-        default: false     
-
       cilium:
         description: Cilium Grafana
         required: true
