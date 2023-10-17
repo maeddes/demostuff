@@ -27,6 +27,12 @@ on:
         type: boolean
         default: false
 
+      prometheus:
+        description: Kube Prometheus Stack
+        required: true
+        type: boolean
+        default: false     
+
       cilium:
         description: Cilium Grafana
         required: true
@@ -97,6 +103,14 @@ jobs:
         kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
         kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
         kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+
+    - name: Install Kube Prometheus Stack
+      if: ${{ github.event.inputs.prometheus == 'true'}}
+      run: |
+        helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+        helm repo add stable https://charts.helm.sh/stable
+        helm repo update
+        helm install prometheus prometheus-community/kube-prometheus-stack -n kube-prometheus-stack --create-namespace
 
     - name: Install Skooner
       if: ${{ github.event.inputs.skooner == 'true'}}

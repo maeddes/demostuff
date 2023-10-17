@@ -20,6 +20,12 @@ on:
         required: true
         type: boolean
         default: false
+
+      prometheus:
+        description: Kube Prometheus Stack
+        required: true
+        type: boolean
+        default: false     
       
       hubble:
         description: Cilium Hubble
@@ -190,6 +196,56 @@ jobs:
                     path: /
         ---
         EOF
+
+    - name: Install Kube Prometheus Stack
+      if: ${{ github.event.inputs.prometheus == 'true'}}
+      continue-on-error: true
+      run: |
+
+        export INGRESS_IP=$(kubectl get service --namespace ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[].ip}')
+        echo $INGRESS_IP
+        export INGRESS_DOMAIN=${INGRESS_IP}.nip.io
+        cat <<EOF | kubectl apply -f -
+        kind: Ingress
+        apiVersion: networking.k8s.io/v1
+        metadata:
+          name: grafana
+          namespace: kube-prometheus-stack
+        spec:
+          ingressClassName: nginx
+          rules:
+            - host: grafana.${INGRESS_DOMAIN}
+              http:
+                paths:
+                  - path: /
+                    backend:
+                      service:
+                        name: prometheus-grafana
+                        port:
+                          number: 80
+                    pathType: ImplementationSpecific
+        ---
+        kind: Ingress
+        apiVersion: networking.k8s.io/v1
+        metadata:
+          name: prometheus
+          namespace: kube-prometheus-stack
+        spec:
+          ingressClassName: nginx
+          rules:
+            - host: prometheus.${INGRESS_DOMAIN}
+              http:
+                paths:
+                  - path: /
+                    backend:
+                      service:
+                        name: prometheus-kube-prometheus-prometheus
+                        port:
+                          number: 9090
+                    pathType: ImplementationSpecific
+        ---
+        EOF
+
 
     - name: Configure Otel Stuff
       if: ${{ github.event.inputs.otel }}
