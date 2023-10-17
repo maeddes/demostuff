@@ -27,12 +27,6 @@ on:
         type: boolean
         default: false
 
-      prometheus:
-        description: Kube Prometheus Stack
-        required: true
-        type: boolean
-        default: false     
-
       cilium:
         description: Cilium Grafana
         required: true
@@ -108,6 +102,10 @@ jobs:
       if: ${{ github.event.inputs.prometheus == 'true'}}
       run: |
         echo ${{ github.event.inputs.prometheus }}
+        helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+        helm repo add stable https://charts.helm.sh/stable
+        helm repo update
+        helm install prometheus prometheus-community/kube-prometheus-stack -n kube-prometheus-stack --create-namespace
 
     - name: Install Skooner
       if: ${{ github.event.inputs.skooner == 'true'}}
