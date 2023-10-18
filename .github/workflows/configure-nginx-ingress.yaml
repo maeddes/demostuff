@@ -349,14 +349,16 @@ jobs:
         export INGRESS_DOMAIN=${INGRESS_IP}.nip.io       
         echo Ingress Host: $INGRESS_DOMAIN Ingress Domain: $INGRESS_DOMAIN
 
-        echo ${{ github.event.inputs.headlamp }}
+        kubectl get ing -A --no-headers | awk '{print $4}' | xargs -I _ echo http://_
 
-        echo http://headlamp.${INGRESS_DOMAIN}
-        echo http://skooner.${INGRESS_DOMAIN}        
-        echo http://hubble.${INGRESS_DOMAIN}
-        echo http://otel.${INGRESS_DOMAIN}
-        echo http://petclinic.${INGRESS_DOMAIN}
-        echo http://todoui.${INGRESS_DOMAIN}
+        #echo ${{ github.event.inputs.headlamp }}
 
-        kubectl get svc argocd-server -n argocd
+        #echo http://headlamp.${INGRESS_DOMAIN}
+        #echo http://skooner.${INGRESS_DOMAIN}        
+        #echo http://hubble.${INGRESS_DOMAIN}
+        #echo http://otel.${INGRESS_DOMAIN}
+        #echo http://petclinic.${INGRESS_DOMAIN}
+        #echo http://todoui.${INGRESS_DOMAIN}
+
+        #kubectl get svc argocd-server -n argocd
         
