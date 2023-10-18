@@ -7,7 +7,7 @@ on:
         description: k8sname
         required: true
         type: string
-        default: 'abc'
+        #default: 'abc'
 
       otel:
         description: OpenTelemetry
