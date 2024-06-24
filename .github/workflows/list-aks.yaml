@@ -1,4 +1,4 @@
-name: Azure CLI
+name: List AKS and VMs
 
 on:
   workflow_dispatch: {}
