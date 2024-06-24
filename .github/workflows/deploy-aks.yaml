@@ -1,4 +1,4 @@
-name: Deploy AKS
+name: Cluster - Deploy AKS
 
 on:
   workflow_dispatch: 

@@ -1,4 +1,4 @@
-name: Suspend AKS
+name: Cluster - Stop/Suspend AKS
 
 on:
   workflow_dispatch: 

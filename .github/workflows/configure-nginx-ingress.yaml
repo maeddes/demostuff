@@ -1,4 +1,4 @@
-name: nginx Ingress
+name: Apps - Configure nginx Ingress
 
 on:
   workflow_dispatch: 

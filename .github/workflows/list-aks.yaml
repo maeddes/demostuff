@@ -1,4 +1,4 @@
-name: List AKS and VMs
+name: Cluster - List AKS and VMs
 
 on:
   workflow_dispatch: {}

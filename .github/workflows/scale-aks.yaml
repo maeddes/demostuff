@@ -1,4 +1,4 @@
-name: Scale AKS
+name: Cluster - Scale AKS
 
 on:
   workflow_dispatch: 

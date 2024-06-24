@@ -1,4 +1,4 @@
-name: Resume AKS
+name: Cluster - Start/Resume AKS
 
 on:
   workflow_dispatch: 

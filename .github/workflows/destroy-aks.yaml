@@ -1,4 +1,4 @@
-name: Destroy AKS
+name: Cluster - Destroy AKS
 
 on:
   workflow_dispatch: 
