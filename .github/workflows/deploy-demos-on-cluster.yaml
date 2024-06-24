@@ -1,4 +1,4 @@
-name: Apps - Deploy Demos on AKS
+name: Apps - Deploy demos on AKS
 
 on:
   workflow_dispatch: 

@@ -10,7 +10,7 @@ on:
         #default: 'abc'
 
 jobs: 
-  destroy-cluster:
+  suspend-cluster:
     runs-on: ubuntu-latest
     steps:
     - name: Echo Something
@@ -29,8 +29,8 @@ jobs:
       with:
         azcliversion: 2.30.0
         inlineScript: |
-          echo az aks stop --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --yes
-          az aks stop --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --yes
+          echo az aks stop --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} 
+          az aks stop --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} 
 
 
            
