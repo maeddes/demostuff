@@ -1,0 +1,37 @@
+name: Resume AKS
+
+on:
+  workflow_dispatch: 
+    inputs:
+      k8sName:
+        description: k8sname
+        required: true
+        type: string
+        #default: 'abc'
+
+jobs: 
+  destroy-cluster:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Echo Something
+      run: | 
+        echo "Hello, Welt!"
+        echo "Destroying" mhsrg-${{ github.event.inputs.k8sName }}
+        echo ${{ github.event.inputs.nodeCount }}
+      
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: '${{ secrets.AZURE_PLAYGROUND }}'
+
+    - name: Suspend AKS Cluster
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: |
+          echo az aks start --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --yes
+          az aks start --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --yes
+
+
+           
+    

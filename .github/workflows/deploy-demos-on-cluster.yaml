@@ -182,7 +182,7 @@ jobs:
         ref: 'master'
         path: './technologyconsulting-containerexerciseapp'
 
-    - name: Novatec Sample Todo Application
+    - name: Polyglot Sample Todo Application
       if: ${{ github.event.inputs.todoapp == 'true'}}
       continue-on-error: true
       run: |
