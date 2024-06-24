@@ -9,7 +9,7 @@ jobs:
     steps:
     - name: Test AZ CLI
       if: false
-      uses: azure/CLI@v1
+      uses: azure/CLI@v2
       with:
         inlineScript: |
           az version

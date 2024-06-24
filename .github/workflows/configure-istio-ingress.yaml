@@ -36,12 +36,12 @@ jobs:
         echo "Hello, Welt!"
       
     - name: Azure Login
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
         creds: '${{ secrets.AZURE_PLAYGROUND }}'
 
     - name: Display az cli version
-      uses: azure/CLI@v1
+      uses: azure/CLI@v2
       with:
         inlineScript: |
           az version

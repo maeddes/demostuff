@@ -20,12 +20,12 @@ jobs:
         echo ${{ github.event.inputs.nodeCount }}
       
     - name: Azure Login
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
         creds: '${{ secrets.AZURE_PLAYGROUND }}'
 
     - name: Suspend AKS Cluster
-      uses: azure/CLI@v1
+      uses: azure/CLI@v2
       with:
         azcliversion: 2.30.0
         inlineScript: |

@@ -32,19 +32,19 @@ jobs:
 
       
     - name: Azure Login
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
         creds: '${{ secrets.AZURE_PLAYGROUND }}'
 
     - name: Display az cli version
-      uses: azure/CLI@v1
+      uses: azure/CLI@v2
       with:
         inlineScript: |
           az version
 
     - name: Create Resource Group
       continue-on-error: true
-      uses: azure/CLI@v1
+      uses: azure/CLI@v2
       with:
         inlineScript: |
           echo group create --name mhsrg-${{ github.event.inputs.k8sName }} --location westeurope --tag shortname=mhs
@@ -52,7 +52,7 @@ jobs:
            
     - name: Create plain AKS Cluster
       if: ${{ github.event.inputs.cilium == 'false'}}
-      uses: azure/CLI@v1
+      uses: azure/CLI@v2
       with:
         inlineScript: |
           echo az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --generate-ssh-keys
@@ -61,7 +61,7 @@ jobs:
     - name: Create Cilium-enabled AKS Cluster
       continue-on-error: true
       if: ${{ github.event.inputs.cilium == 'true'}}
-      uses: azure/CLI@v1
+      uses: azure/CLI@v2
       with:
         inlineScript: |
           echo az aks create --resource-group mhsrg-${{ github.event.inputs.k8sName }} --name mhs-${{ github.event.inputs.k8sName }} --node-count ${{ github.event.inputs.nodeCount }} --node-vm-size Standard_E8_v3 --generate-ssh-keys --network-plugin none 
