@@ -17,8 +17,7 @@ jobs:
     - name: Cilium Install
       continue-on-error: true
       run: | 
-
-echo is the indentation
-      echo important
-            echo in a run block?
+        echo is the indentation
+              echo important
+                    echo in a run block?
 
